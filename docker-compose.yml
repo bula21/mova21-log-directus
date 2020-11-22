@@ -1,0 +1,59 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - directus_db
+
+  directus:
+    build: .
+    restart: always
+    environment:
+      DIRECTUS_APP_ENV: "production"
+      DIRECTUS_AUTH_PUBLICKEY: ${DIRECTUS_AUTH_PUBLICKEY}
+      DIRECTUS_AUTH_SECRETKEY: ${DIRECTUS_AUTH_SECRETKEY}
+      DIRECTUS_DATABASE_HOST: "mysql"
+      DIRECTUS_DATABASE_PORT: "3306"
+      DIRECTUS_DATABASE_NAME: ${MYSQL_DATABASE}
+      DIRECTUS_DATABASE_USERNAME: ${MYSQL_USER}
+      DIRECTUS_DATABASE_PASSWORD: ${MYSQL_PASSWORD}
+      VIRTUAL_HOST: ${DOMAIN}
+      LETSENCRYPT_HOST: ${DOMAIN}
+      LETSENCRYPT_EMAIL: "it-support@bula21.ch"
+      DIRECTUS_AUTH_SOCIALPROVIDERS_OKTA_CLIENTID: ${DIRECTUS_AUTH_SOCIALPROVIDERS_OKTA_CLIENTID}
+      DIRECTUS_AUTH_SOCIALPROVIDERS_OKTA_CLIENTSECRET: ${DIRECTUS_AUTH_SOCIALPROVIDERS_OKTA_CLIENTSECRET}
+      DIRECTUS_AUTH_SOCIALPROVIDERS_OKTA_BASEURL: ${DIRECTUS_AUTH_SOCIALPROVIDERS_OKTA_BASEURL}
+    volumes:
+      - ./data/config:/var/directus/config
+      - ./data/uploads:/var/directus/public/uploads
+    networks:
+      - directus_db
+      - proxy_net
+    depends_on:
+      - mysql
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      VIRTUAL_HOST: ${ADMINER_DOMAIN}
+      LETSENCRYPT_HOST: ${ADMINER_DOMAIN}
+      LETSENCRYPT_EMAIL: "it-support@bula21.ch"
+    networks:
+      - directus_db
+      - proxy_net
+    depends_on:
+      - mysql
+    
+networks:
+  proxy_net:
+    external:
+      name: proxy_net
+  directus_db:
