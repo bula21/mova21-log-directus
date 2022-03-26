@@ -11,7 +11,11 @@ Docs:
 
 ## Set up playground v9 env
 
-## 1. Database import
+* Directus: http://localhost:8080/ (`admin@example.org`, `secret-admin`)
+* Adminer: http://localhost:8081/ (autologin)
+* Keycloak http://keycloak:8082/ (`admin`, `secret-admin`)
+
+### 1. Database import
 
 ```bash
 docker-compose up database adminer # give MySQL time to seed
@@ -50,20 +54,22 @@ RENAME TABLE directus_users TO directus_users__old;
 RENAME TABLE directus_webhooks TO directus_webhooks__old;
 ```
 
-## 2. Keycloak
+### 2. Keycloak
+
+In your `/etc/hosts`, add `127.0.0.1 keycloak`.
 
 ```bash
 # Ctrl-C
-docker-compose up
+docker-compose up keycloak
 ```
 
 Configure (Or, just import `test-realm-export.json`):
 
-* Go to http://localhost:8082/auth/admin/ (`admin`, `secret-admin`):
+* Go to http://keycloak:8082/auth/admin/ (`admin`, `secret-admin`):
 * Add Realm
   * "log-directus"
 * Users -> Add
-  * "test", "test@example.org"
+  * "test", "test@example.org", email verified
   * Credentials -> Set Password "secret-test", temporary = Off
 * Create client
   * "log-directus"
@@ -73,17 +79,11 @@ Configure (Or, just import `test-realm-export.json`):
   * Go to "Credentials" and copy to `docker-compose.yml` `AUTH_KEYCLOAK_CLIENT_SECRET`
 * Restart docker-compose
 
-## 3. Directus and apps
-
-Restart Directus for the new Keycloak secret to take effect:
+### 3. Directus and apps
 
 ```bash
 # Ctrl-C
 docker-compose up
 ```
 
-App URLs:
-
-* Directus: http://localhost:8080/ (`admin@example.org`, `secret-admin`)
-* Adminer: http://localhost:8081/ (autologin)
-* Keycloak http://localhost:8082/ (`admin`, `secret-admin`)
+You can now also log into directus via Keycloak. No user pre-creation required.

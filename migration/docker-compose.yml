@@ -24,6 +24,9 @@ services:
       - directus
     depends_on:
       - database
+      - keycloak
+    restart: always
+
     environment:
       # https://docs.directus.io/configuration/config-options/
       PORT: "8055"
@@ -40,19 +43,20 @@ services:
       DB_DATABASE: "directus"
       DB_USER: "directus"
       DB_PASSWORD: "secret-directus"
-      DB_CHARSET: "UTF8_GENERAL_CI" # TODO
 
       ADMIN_EMAIL: "admin@example.org"
       ADMIN_PASSWORD: "secret-admin"
 
+      AUTH_PROVIDERS: "keycloak"
       AUTH_KEYCLOAK_ALLOW_PUBLIC_REGISTRATION: "true"
       AUTH_KEYCLOAK_CLIENT_ID: "log-directus"
-      AUTH_KEYCLOAK_CLIENT_SECRET: "369ce95a-dc84-4277-8c68-a0b393aa14c8"
+      AUTH_KEYCLOAK_CLIENT_SECRET: "ada2ff6c-1d00-4458-91bc-c8f237805839"
       AUTH_KEYCLOAK_DRIVER: "openid"
       AUTH_KEYCLOAK_IDENTIFIER_KEY: "sub"
-      AUTH_KEYCLOAK_SCOPE: "openid email"
+      AUTH_KEYCLOAK_SCOPE: "openid profile email roles"
       AUTH_KEYCLOAK_REQUIRE_VERIFIED_EMAIL: "true"
-      AUTH_KEYCLOAK_ISSUER_URL: "https://auth.bula21.ch/auth/realms/log-directus"
+      AUTH_KEYCLOAK_ISSUER_URL: "http://keycloak:8082/auth/realms/log-directus"
+      # AUTH_KEYCLOAK_DEFAULT_ROLE_ID # TODO
 
   adminer:
     image: michalhosna/adminer:4.8.0-en_v1
@@ -75,13 +79,16 @@ services:
   keycloak:
     image: jboss/keycloak:11.0.2
     ports:
-      - 8082:8080
+      - 8082:8082
+    networks:
+      - directus
     volumes:
       - /opt/jboss/keycloak/standalone/data
     environment:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: secret-admin
       DB_VENDOR: h2
+    command: "-Djboss.http.port=8082"
 
 networks:
   directus:
