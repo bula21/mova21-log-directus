@@ -16,20 +16,8 @@ docker-compose up
 * Directus: http://localhost:8080 (see `docker-compose.yml` for credentials)
 * Adminer: http://localhost:8081
 
-## Migration Tool
 
-```
-git clone git@github.com:directus-community/migration-tool.git
-cd migration-tool/
-npm install
 
-cp dotenv migration-tool/.env
-nano migration-tool/.env
-cd migration-tool/
-node index.js
-```
-
-**Does not work as of 2022-03-13 (migration tool `2fdae2ed`)!**
 
 ## Manual migration
 

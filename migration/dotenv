@@ -1,8 +1,0 @@
-V8_URL="https://log.bula21.ch"
-V8_PROJECT_NAME="_"
-# get JWT from localstorage after logging in to https://logomat.bula21.ch/
-V8_TOKEN="REPLACE_ME"
-
-V9_URL="http://localhost:8080"
-# set here: http://localhost:8080/admin/users
-V9_TOKEN="REPLACE_ME"
