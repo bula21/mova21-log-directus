@@ -11,11 +11,8 @@ services:
       MYSQL_DATABASE: directus
       MYSQL_USER: directus
       MYSQL_PASSWORD: secret-directus
-
-      LANGL: C.UTF-8
     ports:
       - "3306:3306"
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   directus:
     container_name: directus
@@ -43,7 +40,7 @@ services:
       DB_DATABASE: "directus"
       DB_USER: "directus"
       DB_PASSWORD: "secret-directus"
-      # DB_CHARSET: "UTF8_GENERAL_CI"
+      DB_CHARSET: "UTF8_GENERAL_CI" # TODO
 
       ADMIN_EMAIL: "admin@example.org"
       ADMIN_PASSWORD: "secret-admin"
