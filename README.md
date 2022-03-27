@@ -192,6 +192,18 @@ ALTER TABLE trp_tour MODIFY modified_by CHAR(36) NULL;	UPDATE trp_tour LEFT JOIN
 ALTER TABLE wasser MODIFY owner CHAR(36) NULL;	UPDATE wasser LEFT JOIN directus_users__old ON wasser.owner = directus_users__old.id LEFT JOIN directus_users ON directus_users.email = directus_users__old.email SET wasser.owner = directus_users.id;
 ```
 
+### Relations etc. via tool
+
+```bash
+git clone git@github.com:directus-community/migration-tool.git tool
+cd tool
+npm install
+
+cp ../dotenv .env
+nano .env
+node index.js -l
+```
+
 ## TODO
 
 - [x] User per SQL erstellen --> Ja
