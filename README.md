@@ -114,11 +114,27 @@ FROM directus_users__old;
 
 ### Ownership
 
+Example (`telekom.owner`):
+
+```sql
+-- for verification only, not needed in prod
+ALTER TABLE telekom ADD owner__old INT(10) NULL AFTER owner;
+UPDATE telekom SET owner__old = owner;
+ALTER TABLE telekom MODIFY owner CHAR(36) NULL;
+
+UPDATE telekom
+LEFT JOIN directus_users__old ON telekom.owner = directus_users__old.id
+LEFT JOIN directus_users ON directus_users.email = directus_users__old.email
+SET telekom.owner = directus_users.id
+```
+
+Old -> new ID mapping query:
+
 ```sql
 SELECT 
-directus_users.email,
-directus_users__old.id AS id_old,
-directus_users.id AS id_new
+  directus_users.email,
+  directus_users__old.id AS id_old,
+  directus_users.id AS id_new
 FROM directus_users__old
 LEFT JOIN directus_users ON directus_users.email = directus_users__old.email
 ORDER BY id_old
@@ -129,7 +145,7 @@ ORDER BY id_old
 - [x] User per SQL erstellen --> Ja
 - [x] Können Vor-erstellte user per SSO einloggen? --> Ja
 - [x] Testen, ob SSO jetzt ohne Vorerstellen von Benutzern geht --> Ja
-- [ ] migrate users with id 1, 7 (`external_id IS NULL`)
+- [ ] Migrate users with id 1, 7 (`external_id IS NULL`)
 - [ ] Login von Logomat/TraMat
 - [ ] Änderungen am Logomat/TraMat testen
 - [ ] Rollen automatisch zuweisen bei SSO?
