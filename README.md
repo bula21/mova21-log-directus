@@ -86,4 +86,50 @@ Configure (Or, just import `test-realm-export.json`):
 docker-compose up
 ```
 
-You can now also log into directus via Keycloak. No user pre-creation required.
+You can now also log into Directus via Keycloak. No user pre-creation required.
+
+## Migration
+
+### Users
+
+Run in adminer:
+
+```sql
+INSERT INTO directus_users (
+  id,
+  first_name,
+  last_name,
+  email,
+  provider,
+  external_identifier
+) SELECT
+  UUID(),
+  first_name,
+  last_name,
+  email,
+  'keycloak',
+  external_id
+FROM directus_users__old;
+```
+
+### Ownership
+
+```sql
+SELECT 
+directus_users.email,
+directus_users__old.id AS id_old,
+directus_users.id AS id_new
+FROM directus_users__old
+LEFT JOIN directus_users ON directus_users.email = directus_users__old.email
+ORDER BY id_old
+```
+
+## TODO
+
+- [x] User per SQL erstellen --> Ja
+- [x] Können Vor-erstellte user per SSO einloggen? --> Ja
+- [x] Testen, ob SSO jetzt ohne Vorerstellen von Benutzern geht --> Ja
+- [ ] migrate users with id 1, 7 (`external_id IS NULL`)
+- [ ] Login von Logomat/TraMat
+- [ ] Änderungen am Logomat/TraMat testen
+- [ ] Rollen automatisch zuweisen bei SSO?
