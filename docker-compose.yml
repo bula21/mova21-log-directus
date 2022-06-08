@@ -12,6 +12,22 @@ services:
       - ./mysql:/var/lib/mysql
     networks:
       - directus_db
+  mariadb-backup:
+    profiles:
+      - backup
+    image: ghcr.io/bula21/mova21-mariadb-backup:latest
+    volumes:
+      - /var/backups/mova21-log-directus/mariadb:/backups
+    depends_on:
+      - mysql
+    environment:
+      - MYSQL_USER=${MYSQL_USER:-mariadb}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-mariadb}
+      - MYSQL_HOST=${MYSQL_HOST:-mysql}
+    networks:
+      - directus_db
 
   directus:
     build: .
